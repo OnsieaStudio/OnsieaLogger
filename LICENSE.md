@@ -10,7 +10,7 @@ This file is part of OnsieaLogger project (https://github.com/Onsiea/OnsieaLogge
 
 ### License Notice
 
-https://github.com/Onsiea/SourceLinker/blob/main/LICENSE_NOTICE.md
+https://github.com/Onsiea/OnsieaLogger/blob/main/LICENSE_NOTICE.md
 
 
 ## Consent:
