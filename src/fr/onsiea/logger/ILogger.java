@@ -16,4 +16,8 @@ public interface ILogger
 	ILogger log(Object... objectsIn);
 
 	ILogger logLn(Object... objectsIn);
+
+	ILogger logErr(Object... objectsIn);
+
+	ILogger logErrLn(Object... objectsIn);
 }

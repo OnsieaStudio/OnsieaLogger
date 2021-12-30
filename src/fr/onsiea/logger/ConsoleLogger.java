@@ -57,4 +57,20 @@ public class ConsoleLogger implements ILogger
 
 		return this;
 	}
+
+	@Override
+	public ILogger logErr(Object... objectsIn)
+	{
+		System.err.print(LogUtils.toString(objectsIn));
+
+		return this;
+	}
+
+	@Override
+	public ILogger logErrLn(Object... objectsIn)
+	{
+		System.err.println(LogUtils.toString(objectsIn));
+
+		return this;
+	}
 }
