@@ -32,20 +32,24 @@ import fr.onsiea.logger.utils.LogUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
  * @author Seynax
  *
  */
 
-@ToString
 @Getter(AccessLevel.PUBLIC)
 @Setter(AccessLevel.PRIVATE)
 public class StreamLogger implements ILogger
 {
 	private PrintStream	out;
 	private PrintStream	err;
+
+	public StreamLogger(PrintStream outIn, PrintStream errIn)
+	{
+		this.out(outIn);
+		this.err(errIn);
+	}
 
 	@Override
 	public ILogger log(EnumSeverity severityIn, Object... objectsIn)
