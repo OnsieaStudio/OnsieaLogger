@@ -32,6 +32,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import fr.onsiea.logger.EnumSeverity;
+import fr.onsiea.logger.utils.DateUtils;
+import fr.onsiea.logger.utils.TimeUtils;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  * @author Seynax
  *
@@ -48,12 +57,19 @@ public class TagParser
 	//private static Pattern			PATTERN_TAG		= Pattern
 	//		.compile("((<[[\\W\\w]&&[^<]]*>)([[\\w\\W]&&[^<>]]+|[[\\w\\W]&&[^<>]]*<|[[\\w\\W]&&[^<>]]*$))");
 
-	public final static List<TagInfo> parseAndReplace(String contentIn) throws Exception
+	public final static TagParsingResult parseAndReplace(StringBuilder stringBuilderIn, EnumSeverity severityIn,
+			String contentIn) throws Exception
 	{
-		var			matcher	= TagParser.PATTERN_OPEN.matcher(contentIn);
+		return TagParser.parseAndReplace(stringBuilderIn, severityIn, contentIn, "");
+	}
+
+	public final static TagParsingResult parseAndReplace(StringBuilder stringBuilderIn, EnumSeverity severityIn,
+			String patternIn, String contentIn) throws Exception
+	{
+		var			matcher	= TagParser.PATTERN_OPEN.matcher(patternIn);
 		final var	OPENS	= matcher.results().count();
 
-		matcher = TagParser.PATTERN_CLOSE.matcher(contentIn);
+		matcher = TagParser.PATTERN_CLOSE.matcher(patternIn);
 		final var CLOSES = matcher.results().count();
 
 		if (OPENS != CLOSES)
@@ -61,28 +77,30 @@ public class TagParser
 			if (TagParser.HIGH_SEVERITY)
 			{
 				final var err = TagParser.err("[ERROR] TagParser Logs error : need as many opening and closing tags !",
-						contentIn);
+						patternIn);
 
 				throw new Exception(err);
 			}
 			if (TagParser.LOG_WARN)
 			{
 				final var err = TagParser
-						.err("[WARNING] TagParser Logs error : need as many opening and closing tags !", contentIn);
+						.err("[WARNING] TagParser Logs error : need as many opening and closing tags !", patternIn);
 
 				System.err.println(err);
 			}
 		}
 
-		var							disabled	= true;
+		var							disabled	= false;
+		var							parameter	= false;
 		var							level		= 0;
-		final List<TagInfo>			tags		= new ArrayList<>();
 		final Map<Integer, TagInfo>	currents	= new HashMap<>();
 		TagInfo						current		= null;
+		stringBuilderIn = new StringBuilder();
+		final var tagParsingResults = new TagParsingResult(severityIn, patternIn, contentIn, stringBuilderIn);
 
-		for (var i = 0; i < contentIn.length(); i++)
+		for (var i = 0; i < patternIn.length(); i++)
 		{
-			final var c = contentIn.charAt(i);
+			final var c = patternIn.charAt(i);
 			if (!disabled)
 			{
 				if (c == '<')
@@ -92,16 +110,16 @@ public class TagParser
 						if (TagParser.HIGH_SEVERITY)
 						{
 							final var err = TagParser.err(
-									"[ERROR] TagParser Logs error : no tag can be contained in another !", contentIn, i,
-									contentIn.indexOf(">", i));
+									"[ERROR] TagParser Logs error : no tag can be contained in another !", patternIn, i,
+									patternIn.indexOf(">", i));
 
 							throw new Exception(err);
 						}
 						if (TagParser.LOG_WARN)
 						{
 							final var err = TagParser.err(
-									"[WARNING] TagParser Logs error : no tag can be contained in another !", contentIn,
-									i, contentIn.indexOf(">", i));
+									"[WARNING] TagParser Logs error : no tag can be contained in another !", patternIn,
+									i, patternIn.indexOf(">", i));
 
 							System.err.println(err);
 						}
@@ -109,11 +127,18 @@ public class TagParser
 					}
 					else
 					{
+						if (level > 0)
+						{
+							tagParsingResults.hasEncapsuled(true);
+						}
+
 						level++;
 
 						current = new TagInfo(level > 0, level, i);
 						current.content(current.content() + "<");
 						currents.put(level, current);
+
+						tagParsingResults.increaseLevels();
 					}
 				}
 				else if (c == '>')
@@ -123,7 +148,7 @@ public class TagParser
 						if (TagParser.HIGH_SEVERITY)
 						{
 							final var err = TagParser.err(
-									"[ERROR] TagParser Logs error : need as many opening and closing tags !", contentIn,
+									"[ERROR] TagParser Logs error : need as many opening and closing tags !", patternIn,
 									i, i);
 
 							throw new Exception(err);
@@ -132,7 +157,7 @@ public class TagParser
 						{
 							final var err = TagParser.err(
 									"[WARNING] TagParser Logs error : need as many opening and closing tags !",
-									contentIn, i, i);
+									patternIn, i, i);
 
 							System.err.println(err);
 						}
@@ -145,30 +170,69 @@ public class TagParser
 						if (TagParser.HIGH_SEVERITY)
 						{
 							final var err = TagParser.err("[ERROR] TagParser Logs error : compilation failed, tag at \""
-									+ level + "\" level is not defined !", contentIn, i, i);
+									+ level + "\" level is not defined !", patternIn, i, i);
 
 							throw new Exception(err);
 						}
 						final var err = TagParser.err("[WARNING] TagParser Logs error : compilation failed, tag at \""
-								+ level + "\" level is not defined !", contentIn, i, i);
+								+ level + "\" level is not defined !", patternIn, i, i);
 
 						System.err.println(err);
 					}
 					else
 					{
 						currents.remove(level);
-						tags.add(tagInfo);
+						tagParsingResults.add(tagInfo);
 
 						tagInfo.end(i);
 
 						tagInfo.content(tagInfo.content() + ">");
-						tagInfo.name(tagInfo.content().replace("<", "").replace(">", ""));
+						final var	name		= tagInfo.content().replace("<", "").replace(">", "");
+						final var	elements	= name.split(":");
+
+						if (elements.length <= 0)
+						{
+							tagInfo.name(name);
+						}
+						else
+						{
+							tagInfo.name(elements[0]);
+
+							if (elements.length >= 2)
+							{
+								tagInfo.parameters(elements, 1, elements.length);
+							}
+						}
+
+						final var replacement = TagParser.replacement(severityIn, patternIn, contentIn, tagInfo);
+
+						if (replacement != null)
+						{
+							stringBuilderIn.append(replacement);
+						}
+						else
+						{
+							stringBuilderIn.append(tagInfo.content());
+						}
 					}
 					level--;
 				}
-				else if (("" + c).matches("[a-zA-Z0-9:\\._$]"))
+				else
 				{
-					current.content(current.content() + c);
+					if (c == ':')
+					{
+						parameter = true;
+						current.content(current.content() + c);
+					}
+					else if ((("" + c).matches("[a-zA-Z0-9$_]") || c == '.') || parameter)
+					{
+						current.content(current.content() + c);
+					}
+
+					if (level <= 0)
+					{
+						stringBuilderIn.append(c);
+					}
 				}
 			}
 			else if (c == '>')
@@ -177,7 +241,62 @@ public class TagParser
 			}
 		}
 
-		return tags;
+		return tagParsingResults;
+	}
+
+	private final static String replacement(EnumSeverity severityIn, String patternIn, String contentIn,
+			TagInfo tagInfoIn)
+	{
+		switch (tagInfoIn.name())
+		{
+			case "severity":
+				if (EnumSeverity.NONE.equals(severityIn))
+				{
+					return null;
+				}
+				return severityIn.name();
+
+			case "severity_alias":
+				if (EnumSeverity.NONE.equals(severityIn))
+				{
+					return null;
+				}
+				return severityIn.alias();
+
+			case "content":
+				return contentIn;
+
+			case "pattern":
+				return patternIn;
+
+			case "time":
+				if (tagInfoIn.parameters().size() > 0)
+				{
+					final var parameter = tagInfoIn.parameters().get(0);
+
+					if (parameter != null)
+					{
+						return TimeUtils.str(parameter);
+					}
+				}
+
+				return TimeUtils.str();
+
+			case "date":
+				if (tagInfoIn.parameters().size() > 0)
+				{
+					final var parameter = tagInfoIn.parameters().get(0);
+
+					if (parameter != null && parameter.matches("[GyMdkHmsSEDFwWahKzZYuXL\\._']"))
+					{
+						return DateUtils.str(parameter);
+					}
+				}
+
+				return DateUtils.str();
+		}
+
+		return null;
 	}
 
 	private final static String err(String errorIn, String contentIn)
@@ -196,5 +315,43 @@ public class TagParser
 		builder.append("\n\"" + contentIn + "\"");
 
 		return builder.toString();
+	}
+
+	@EqualsAndHashCode
+	@ToString
+	@Getter
+	@Setter(AccessLevel.PRIVATE)
+	public final static class TagParsingResult
+	{
+		private EnumSeverity	severity;
+		private String			pattern;
+		private String			content;
+		private StringBuilder	stringBuilder;
+		private List<TagInfo>	tags;
+		private int				levels;
+		private boolean			hasEncapsuled;
+
+		public TagParsingResult(EnumSeverity severityIn, String patternIn, String contentIn,
+				StringBuilder stringBuilderIn)
+		{
+			this.severity(severityIn);
+			this.pattern(patternIn);
+			this.content(contentIn);
+			this.stringBuilder(stringBuilderIn);
+
+			this.tags(new ArrayList<>());
+		}
+
+		public TagParsingResult add(TagInfo tagInfoIn)
+		{
+			this.tags().add(tagInfoIn);
+
+			return this;
+		}
+
+		public int increaseLevels()
+		{
+			return this.levels++;
+		}
 	}
 }

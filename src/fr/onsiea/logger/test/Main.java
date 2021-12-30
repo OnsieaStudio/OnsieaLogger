@@ -24,47 +24,32 @@
 *
 *	@author Seynax
 */
-package fr.onsiea.logger;
+package fr.onsiea.logger.test;
+
+import fr.onsiea.logger.EnumSeverity;
+import fr.onsiea.logger.tag.TagParser;
 
 /**
  * @author Seynax
  *
  */
-public enum EnumSeverity
+public class Main
 {
-	NONE("NONE"), INFORMATION("INFO"), WARNING("WARN", true), ERROR("ERR", true), CRITICAL("CRITIC", true);
-
-	private String	alias;
-	private boolean	errStream;
-
-	EnumSeverity(String aliasIn)
+	public final static void main(String[] argsIn)
 	{
-		this.alias(aliasIn);
-	}
+		System.out.println("OnsieaLogger test !");
 
-	EnumSeverity(String aliasIn, boolean errStreamIn)
-	{
-		this.alias(aliasIn);
-		this.errStream(errStreamIn);
-	}
-
-	public final String alias()
-	{
-		return this.alias;
-	}
-
-	private final void alias(String aliasIn)
-	{
-		this.alias = aliasIn;
-	}
-
-	public final boolean errStream()
-	{
-		return this.errStream;
-	}
-
-	private final void errStream(boolean errStreamIn)
-	{
-		this.errStream = errStreamIn;
+		final var stringBuilder = new StringBuilder();
+		try
+		{
+			final var result = TagParser.parseAndReplace(stringBuilder, EnumSeverity.ERROR,
+					"[<severity>-<severity_alias>]-[<time:HH'h'mm ss's'S'ms'>]-[<date>] <content>",
+					"IS ONSIEA LOGGER TEST CONTENT !");
+			System.out.println("Message : " + result.stringBuilder().toString());
+		}
+		catch (final Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 }

@@ -26,6 +26,8 @@
 */
 package fr.onsiea.logger.tag;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -34,12 +36,13 @@ import java.util.Objects;
  */
 public class TagInfo
 {
-	private boolean	encapsulated;
-	private int		level;
-	private String	name;
-	private String	content;
-	private int		start;
-	private int		end;
+	private boolean			encapsulated;
+	private int				level;
+	private String			name;
+	private String			content;
+	private int				start;
+	private int				end;
+	private List<String>	parameters;
 
 	public TagInfo(boolean encapsulatedIn, int levelIn, int startIn)
 	{
@@ -47,6 +50,24 @@ public class TagInfo
 		this.level(levelIn);
 		this.start(startIn);
 		this.content("");
+		this.parameters(new ArrayList<>());
+	}
+
+	/**
+	 * @param elementsIn
+	 * @param startIn
+	 * @param stopIn
+	 */
+	public void parameters(String[] elementsIn, int startIn, int lengthIn)
+	{
+		final var stop = lengthIn - 1;
+		if (startIn >= 0 && stop < elementsIn.length)
+		{
+			for (var i = startIn; i <= stop; i++)
+			{
+				this.parameters().add(elementsIn[i]);
+			}
+		}
 	}
 
 	@Override
@@ -137,5 +158,15 @@ public class TagInfo
 	public void end(int endIn)
 	{
 		this.end = endIn;
+	}
+
+	final List<String> parameters()
+	{
+		return this.parameters;
+	}
+
+	private final void parameters(List<String> parametersIn)
+	{
+		this.parameters = parametersIn;
 	}
 }
