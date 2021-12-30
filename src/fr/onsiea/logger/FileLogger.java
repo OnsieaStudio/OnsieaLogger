@@ -79,34 +79,7 @@ public class FileLogger implements ILogger
 	@Override
 	public ILogger log(EnumSeverity severityIn, Object... objectsIn)
 	{
-		final var content = "[" + severityIn.alias() + "]" + LogUtils.toString(objectsIn);
-
-		try
-		{
-			if (severityIn.errStream())
-			{
-				this.err().write(content);
-			}
-			else
-			{
-				this.out().write(content);
-			}
-		}
-		catch (final IOException e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			try
-			{
-				this.saveRuntime();
-			}
-			catch (final IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
+		this.write(severityIn, "[" + severityIn.alias() + "]" + LogUtils.toString(objectsIn));
 
 		return this;
 	}
@@ -114,33 +87,7 @@ public class FileLogger implements ILogger
 	@Override
 	public ILogger logLn(EnumSeverity severityIn, Object... objectsIn)
 	{
-		final var content = "[" + severityIn.alias() + "]" + LogUtils.toString(objectsIn);
-		try
-		{
-			if (severityIn.errStream())
-			{
-				this.err().write(content + "\n");
-			}
-			else
-			{
-				this.out().write(content + "\n");
-			}
-		}
-		catch (final IOException e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			try
-			{
-				this.saveRuntime();
-			}
-			catch (final IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
+		this.write(severityIn, "[" + severityIn.alias() + "]" + LogUtils.toString(objectsIn) + "\n");
 
 		return this;
 	}
@@ -148,25 +95,7 @@ public class FileLogger implements ILogger
 	@Override
 	public ILogger log(Object... objectsIn)
 	{
-		try
-		{
-			this.out().write(LogUtils.toString(objectsIn));
-		}
-		catch (final IOException e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			try
-			{
-				this.saveRuntime();
-			}
-			catch (final IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
+		this.writeOut(LogUtils.toString(objectsIn));
 
 		return this;
 	}
@@ -174,26 +103,7 @@ public class FileLogger implements ILogger
 	@Override
 	public ILogger logLn(Object... objectsIn)
 	{
-		try
-		{
-			this.out().write(LogUtils.toString(objectsIn) + "\n");
-		}
-
-		catch (final IOException e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			try
-			{
-				this.saveRuntime();
-			}
-			catch (final IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
+		this.writeOut(LogUtils.toString(objectsIn) + "\n");
 
 		return this;
 	}
@@ -201,11 +111,39 @@ public class FileLogger implements ILogger
 	@Override
 	public ILogger logErr(Object... objectsIn)
 	{
-		try
+		this.writeErr(LogUtils.toString(objectsIn));
+
+		return this;
+	}
+
+	@Override
+	public ILogger logErrLn(Object... objectsIn)
+	{
+		this.writeErr(LogUtils.toString(objectsIn) + "\n");
+
+		return this;
+	}
+
+	public ILogger write(EnumSeverity severityIn, String contentIn)
+	{
+		if (severityIn.errStream())
 		{
-			this.err().write(LogUtils.toString(objectsIn));
+			this.writeErr(contentIn);
+		}
+		else
+		{
+			this.writeOut(contentIn);
 		}
 
+		return this;
+	}
+
+	public ILogger writeOut(String contentIn)
+	{
+		try
+		{
+			this.out().write(contentIn);
+		}
 		catch (final IOException e)
 		{
 			e.printStackTrace();
@@ -225,13 +163,11 @@ public class FileLogger implements ILogger
 		return this;
 	}
 
-	@Override
-	public ILogger logErrLn(Object... objectsIn)
+	public ILogger writeErr(String contentIn)
 	{
 		try
 		{
-			this.err().write(LogUtils.toString(objectsIn) + "\n");
-
+			this.err().write(contentIn);
 		}
 		catch (final IOException e)
 		{

@@ -54,16 +54,7 @@ public class StreamLogger implements ILogger
 	@Override
 	public ILogger log(EnumSeverity severityIn, Object... objectsIn)
 	{
-		final var content = "[" + severityIn.alias() + "]" + LogUtils.toString(objectsIn);
-
-		if (severityIn.errStream())
-		{
-			this.err().print(content);
-		}
-		else
-		{
-			this.out().print(content);
-		}
+		this.print(severityIn, "[" + severityIn.alias() + "]" + LogUtils.toString(objectsIn));
 
 		return this;
 	}
@@ -71,15 +62,7 @@ public class StreamLogger implements ILogger
 	@Override
 	public ILogger logLn(EnumSeverity severityIn, Object... objectsIn)
 	{
-		final var content = "[" + severityIn.alias() + "]" + LogUtils.toString(objectsIn);
-		if (severityIn.errStream())
-		{
-			this.err().println(content);
-		}
-		else
-		{
-			this.out().println(content);
-		}
+		this.printLn(severityIn, "[" + severityIn.alias() + "]" + LogUtils.toString(objectsIn));
 
 		return this;
 	}
@@ -114,5 +97,29 @@ public class StreamLogger implements ILogger
 		this.err().println(LogUtils.toString(objectsIn));
 
 		return this;
+	}
+
+	public void print(EnumSeverity severityIn, String contentIn)
+	{
+		if (severityIn.errStream())
+		{
+			this.err().print(contentIn);
+		}
+		else
+		{
+			this.out().print(contentIn);
+		}
+	}
+
+	public void printLn(EnumSeverity severityIn, String contentIn)
+	{
+		if (severityIn.errStream())
+		{
+			this.err().print(contentIn);
+		}
+		else
+		{
+			this.out().print(contentIn);
+		}
 	}
 }

@@ -37,16 +37,7 @@ public class ConsoleLogger implements ILogger
 	@Override
 	public ILogger log(EnumSeverity severityIn, Object... objectsIn)
 	{
-		final var content = "[" + severityIn.alias() + "]" + LogUtils.toString(objectsIn);
-
-		if (severityIn.errStream())
-		{
-			System.err.print(content);
-		}
-		else
-		{
-			System.out.print(content);
-		}
+		this.print(severityIn, "[" + severityIn.alias() + "]" + LogUtils.toString(objectsIn));
 
 		return this;
 	}
@@ -54,15 +45,7 @@ public class ConsoleLogger implements ILogger
 	@Override
 	public ILogger logLn(EnumSeverity severityIn, Object... objectsIn)
 	{
-		final var content = "[" + severityIn.alias() + "]" + LogUtils.toString(objectsIn);
-		if (severityIn.errStream())
-		{
-			System.err.println(content);
-		}
-		else
-		{
-			System.out.println(content);
-		}
+		this.printLn(severityIn, "[" + severityIn.alias() + "]" + LogUtils.toString(objectsIn));
 
 		return this;
 	}
@@ -97,5 +80,29 @@ public class ConsoleLogger implements ILogger
 		System.err.println(LogUtils.toString(objectsIn));
 
 		return this;
+	}
+
+	public void print(EnumSeverity severityIn, String contentIn)
+	{
+		if (severityIn.errStream())
+		{
+			System.err.print(contentIn);
+		}
+		else
+		{
+			System.out.print(contentIn);
+		}
+	}
+
+	public void printLn(EnumSeverity severityIn, String contentIn)
+	{
+		if (severityIn.errStream())
+		{
+			System.err.print(contentIn);
+		}
+		else
+		{
+			System.out.print(contentIn);
+		}
 	}
 }
