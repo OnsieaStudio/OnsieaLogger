@@ -26,6 +26,8 @@
 */
 package fr.onsiea.logger;
 
+import fr.onsiea.logger.utils.LogUtils;
+
 /**
  * @author Seynax
  *

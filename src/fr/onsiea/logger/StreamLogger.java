@@ -28,6 +28,7 @@ package fr.onsiea.logger;
 
 import java.io.PrintStream;
 
+import fr.onsiea.logger.utils.LogUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;

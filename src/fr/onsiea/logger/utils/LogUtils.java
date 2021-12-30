@@ -24,7 +24,7 @@
 *
 *	@author Seynax
 */
-package fr.onsiea.logger;
+package fr.onsiea.logger.utils;
 
 import java.io.PrintStream;
 
