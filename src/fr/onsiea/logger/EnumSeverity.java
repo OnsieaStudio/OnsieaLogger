@@ -32,7 +32,7 @@ package fr.onsiea.logger;
  */
 public enum EnumSeverity
 {
-	INFORMATION("INFO"), WARNING("WARN"), ERROR("ERR", true), CRITICAL("CRITIC", true);
+	INFORMATION("INFO"), WARNING("WARN", true), ERROR("ERR", true), CRITICAL("CRITIC", true);
 
 	private String	alias;
 	private boolean	errStream;
