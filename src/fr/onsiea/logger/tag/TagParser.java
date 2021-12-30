@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
@@ -49,7 +48,7 @@ public class TagParser
 	//private static Pattern			PATTERN_TAG		= Pattern
 	//		.compile("((<[[\\W\\w]&&[^<]]*>)([[\\w\\W]&&[^<>]]+|[[\\w\\W]&&[^<>]]*<|[[\\w\\W]&&[^<>]]*$))");
 
-	public final static List<TagInfo> parse(String contentIn) throws Exception
+	public final static List<TagInfo> parseAndReplace(String contentIn) throws Exception
 	{
 		var			matcher	= TagParser.PATTERN_OPEN.matcher(contentIn);
 		final var	OPENS	= matcher.results().count();
@@ -197,113 +196,5 @@ public class TagParser
 		builder.append("\n\"" + contentIn + "\"");
 
 		return builder.toString();
-	}
-
-	public final static class TagInfo
-	{
-		private boolean	encapsulated;
-		private int		level;
-		private String	name;
-		private String	content;
-		private int		start;
-		private int		end;
-
-		public TagInfo(boolean encapsulatedIn, int levelIn, int startIn)
-		{
-			this.encapsulated(encapsulatedIn);
-			this.level(levelIn);
-			this.start(startIn);
-			this.content("");
-		}
-
-		@Override
-		public int hashCode()
-		{
-			return Objects.hash(this.content, this.encapsulated, this.end, this.level, this.name, this.start);
-		}
-
-		@Override
-		public boolean equals(Object obj)
-		{
-			if (this == obj)
-			{
-				return true;
-			}
-			if (obj == null || this.getClass() != obj.getClass())
-			{
-				return false;
-			}
-			final var other = (TagInfo) obj;
-			return Objects.equals(this.content, other.content) && this.encapsulated == other.encapsulated
-					&& this.end == other.end && this.level == other.level && Objects.equals(this.name, other.name)
-					&& this.start == other.start;
-		}
-
-		@Override
-		public String toString()
-		{
-			return "TagInfo [encapsulated=" + this.encapsulated + ", level=" + this.level + ", name=" + this.name
-					+ ", content=" + this.content + ", start=" + this.start + ", end=" + this.end + "]";
-		}
-
-		public boolean encapsulated()
-		{
-			return this.encapsulated;
-		}
-
-		private void encapsulated(boolean encapsulatedIn)
-		{
-			this.encapsulated = encapsulatedIn;
-		}
-
-		public int level()
-		{
-			return this.level;
-		}
-
-		private void level(int levelIn)
-		{
-			this.level = levelIn;
-		}
-
-		public String name()
-		{
-			return this.name;
-		}
-
-		public void name(String nameIn)
-		{
-			this.name = nameIn;
-		}
-
-		public String content()
-		{
-			return this.content;
-		}
-
-		public void content(String contentIn)
-		{
-			this.content = contentIn;
-		}
-
-		public int start()
-		{
-			return this.start;
-		}
-
-		private void start(int startIn)
-		{
-			this.start = startIn;
-		}
-
-		public int end()
-		{
-			return this.end;
-		}
-
-		public void end(int endIn)
-		{
-			this.end = endIn;
-		}
 	}
 }
