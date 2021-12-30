@@ -1,30 +1,30 @@
 /**
-* Copyright 2021 Onsiea All rights reserved.<br><br>
+*	Copyright 2021 Onsiea All rights reserved.
 *
-* This file is part of SourceLinker project. (https://github.com/Onsiea/SourceLinker)<br><br>
+*	This file is part of OnsieaLogger. (https://github.com/Onsiea/OnsieaLogger)
 *
-* SourceLinker is [licensed] (https://github.com/Onsiea/SourceLinker/blob/main/LICENSE) under the terms of the "GNU General Public License v3.0" (GPL-3.0).
-* https://github.com/Onsiea/SourceLinker/wiki/License#license-and-copyright<br><br>
+*	Unless noted in license (https://github.com/Onsiea/OnsieaLogger/blob/main/LICENSE.md) notice file (https://github.com/Onsiea/OnsieaLogger/blob/main/LICENSE_NOTICE.md), OnsieaLogger and all parts herein is licensed under the terms of the LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)  found here https://www.gnu.org/licenses/lgpl-3.0.html and copied below the license file.
 *
-* SourceLinker is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3.0 of the License, or
-* (at your option) any later version.<br><br>
+*	OnsieaLogger is libre software: you can redistribute it and/or modify
+*	it under the terms of the GNU Lesser General Public License as published by
+*	the Free Software Foundation, either version 3.0 of the License, or
+*	(at your option) any later version.
 *
-* SourceLinker is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.<br><br>
+*	OnsieaLogger is distributed in the hope that it will be useful,
+*	but WITHOUT ANY WARRANTY; without even the implied warranty of
+*	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*	GNU Lesser General Public License for more details.
 *
-* You should have received a copy of the GNU General Public License
-* along with SourceLinker.  If not, see <https://www.gnu.org/licenses/>.<br><br>
+*	You should have received a copy of the GNU Lesser General Public License
+*	along with OnsieaLogger.  If not, see <https://www.gnu.org/licenses/> <https://www.gnu.org/licenses/lgpl-3.0.html>.
 *
-* Neither the name "Onsiea", "SourceLinker", or any derivative name or the names of its authors / contributors may be used to endorse or promote products derived from this software and even less to name another project or other work without clear and precise permissions written in advance.<br><br>
+*	Neither the name "Onsiea", "OnsieaLogger", or any derivative name or the names of its authors / contributors may be used to endorse or promote products derived from this software and even less to name another project or other work without clear and precise permissions written in advance.
 *
-* @Author : Seynax (https://github.com/seynax)<br>
-* @Organization : Onsiea Studio (https://github.com/Onsiea)
+*	(more details on https://github.com/Onsiea/OnsieaLogger/wiki/License)
+*
+*	@author Seynax
 */
-package fr.onsiea.sourcelinker.utils.log;
+package fr.onsiea.logger.utils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
