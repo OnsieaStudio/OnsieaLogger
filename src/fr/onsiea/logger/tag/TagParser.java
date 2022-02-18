@@ -45,8 +45,6 @@ import lombok.ToString;
  * @author Seynax
  *
  */
-@Getter(AccessLevel.PRIVATE)
-@Setter(AccessLevel.PRIVATE)
 public class TagParser
 {
 	private final static boolean	ENCAPSULATION	= false;
@@ -226,7 +224,7 @@ public class TagParser
 						parameter = true;
 						current.content(current.content() + c);
 					}
-					else if (("" + c).matches("[a-zA-Z0-9$_]") || c == '.' || parameter)
+					else if ((("" + c).matches("[a-zA-Z0-9$_]") || c == '.') || parameter)
 					{
 						current.content(current.content() + c);
 					}
@@ -317,41 +315,6 @@ public class TagParser
 		builder.append("\n\"" + contentIn + "\"");
 
 		return builder.toString();
-	}
-
-	private StringBuilder	stringBuilder;
-	private String			pattern;
-
-	public TagParser()
-	{
-		this.stringBuilder(new StringBuilder());
-
-		this.pattern("<content>");
-	}
-
-	public TagParser(String patternIn)
-	{
-		this.stringBuilder(new StringBuilder());
-
-		this.pattern(patternIn);
-	}
-
-	public TagParser withPattern(String patterIn)
-	{
-		this.pattern(patterIn);
-
-		return this;
-	}
-
-	public TagParsingResult parseAndReplace(EnumSeverity severityIn, String contentIn) throws Exception
-	{
-		return TagParser.parseAndReplace(this.stringBuilder(), severityIn, this.pattern(), contentIn);
-	}
-
-	public TagParsingResult parseAndReplace(EnumSeverity severityIn, String patternIn, String contentIn)
-			throws Exception
-	{
-		return TagParser.parseAndReplace(this.stringBuilder(), severityIn, patternIn, contentIn);
 	}
 
 	@EqualsAndHashCode

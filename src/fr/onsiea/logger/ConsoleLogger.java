@@ -26,37 +26,83 @@
 */
 package fr.onsiea.logger;
 
-import fr.onsiea.logger.tag.TagParser;
+import fr.onsiea.logger.utils.LogUtils;
 
 /**
  * @author Seynax
  *
  */
-public class ConsoleLogger extends BaseLogger implements ILogger
+public class ConsoleLogger implements ILogger
 {
-	public ConsoleLogger()
-	{
-		this.tagParser(new TagParser());
-	}
-
-	public ConsoleLogger(String patternIn)
-	{
-		this.tagParser().withPattern(patternIn);
-	}
-
 	@Override
-	protected ILogger printErr(String contentIn)
+	public ILogger log(EnumSeverity severityIn, Object... objectsIn)
 	{
-		System.err.print(contentIn);
+		this.print(severityIn, "[" + severityIn.alias() + "]" + LogUtils.toString(objectsIn));
 
 		return this;
 	}
 
 	@Override
-	protected ILogger print(String contentIn)
+	public ILogger logLn(EnumSeverity severityIn, Object... objectsIn)
 	{
-		System.out.print(contentIn);
+		this.printLn(severityIn, "[" + severityIn.alias() + "]" + LogUtils.toString(objectsIn));
 
 		return this;
+	}
+
+	@Override
+	public ILogger log(Object... objectsIn)
+	{
+		System.out.print(LogUtils.toString(objectsIn));
+
+		return this;
+	}
+
+	@Override
+	public ILogger logLn(Object... objectsIn)
+	{
+		System.out.println(LogUtils.toString(objectsIn));
+
+		return this;
+	}
+
+	@Override
+	public ILogger logErr(Object... objectsIn)
+	{
+		System.err.print(LogUtils.toString(objectsIn));
+
+		return this;
+	}
+
+	@Override
+	public ILogger logErrLn(Object... objectsIn)
+	{
+		System.err.println(LogUtils.toString(objectsIn));
+
+		return this;
+	}
+
+	public void print(EnumSeverity severityIn, String contentIn)
+	{
+		if (severityIn.errStream())
+		{
+			System.err.print(contentIn);
+		}
+		else
+		{
+			System.out.print(contentIn);
+		}
+	}
+
+	public void printLn(EnumSeverity severityIn, String contentIn)
+	{
+		if (severityIn.errStream())
+		{
+			System.err.print(contentIn);
+		}
+		else
+		{
+			System.out.print(contentIn);
+		}
 	}
 }

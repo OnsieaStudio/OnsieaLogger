@@ -26,9 +26,8 @@
 */
 package fr.onsiea.logger.test;
 
-import fr.onsiea.logger.ConsoleLogger;
-import fr.onsiea.logger.FileLogger;
-import fr.onsiea.logger.StreamLogger;
+import fr.onsiea.logger.EnumSeverity;
+import fr.onsiea.logger.tag.TagParser;
 
 /**
  * @author Seynax
@@ -38,82 +37,15 @@ public class Main
 {
 	public final static void main(String[] argsIn)
 	{
-		System.out.println("OnsieaLogger test start !");
-		Main.fileLogger();
-		Main.consoleLogger();
-		Main.streamLogger();
-		System.out.println("OnsieaLogger test end !");
-	}
+		System.out.println("OnsieaLogger test !");
 
-	public final static void fileLogger()
-	{
-		FileLogger logger = null;
-
+		final var stringBuilder = new StringBuilder();
 		try
 		{
-			logger = new FileLogger.Builder("E:\\Java\\projets\\OnsieaLogger\\output\\out.log",
-					"E:\\Java\\projets\\OnsieaLogger\\output\\err.log").append(false)
-							.pattern("[<severity>-<severity_alias>]-[<time:HH'h'mm ss's'S'ms'>]-[<date>] <content>")
-							.build();
-		}
-		catch (final Exception e)
-		{
-			e.printStackTrace();
-		}
-
-		try
-		{
-			logger.logErrLn("A");
-			logger.logLn("B");
-		}
-		catch (final Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-
-	public final static void consoleLogger()
-	{
-		ConsoleLogger logger = null;
-
-		try
-		{
-			logger = new ConsoleLogger("[<severity>-<severity_alias>]-[<time:HH'h'mm ss's'S'ms'>]-[<date>] <content>");
-		}
-		catch (final Exception e)
-		{
-			e.printStackTrace();
-		}
-
-		try
-		{
-			logger.logErrLn("console  - A");
-			logger.logLn("console  - B");
-		}
-		catch (final Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-
-	public final static void streamLogger()
-	{
-		StreamLogger logger = null;
-
-		try
-		{
-			logger = new StreamLogger(System.out, System.err,
-					"[<severity>-<severity_alias>]-[<time:HH'h'mm ss's'S'ms'>]-[<date>] <content>");
-		}
-		catch (final Exception e)
-		{
-			e.printStackTrace();
-		}
-
-		try
-		{
-			logger.logErrLn("stream - A");
-			logger.logLn("stream - B");
+			final var result = TagParser.parseAndReplace(stringBuilder, EnumSeverity.ERROR,
+					"[<severity>-<severity_alias>]-[<time:HH'h'mm ss's'S'ms'>]-[<date>] <content>",
+					"IS ONSIEA LOGGER TEST CONTENT !");
+			System.out.println("Message : " + result.stringBuilder().toString());
 		}
 		catch (final Exception e)
 		{

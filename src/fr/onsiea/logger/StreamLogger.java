@@ -28,7 +28,7 @@ package fr.onsiea.logger;
 
 import java.io.PrintStream;
 
-import fr.onsiea.logger.tag.TagParser;
+import fr.onsiea.logger.utils.LogUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,7 +40,7 @@ import lombok.Setter;
 
 @Getter(AccessLevel.PUBLIC)
 @Setter(AccessLevel.PRIVATE)
-public class StreamLogger extends BaseLogger implements ILogger
+public class StreamLogger implements ILogger
 {
 	private PrintStream	out;
 	private PrintStream	err;
@@ -49,31 +49,77 @@ public class StreamLogger extends BaseLogger implements ILogger
 	{
 		this.out(outIn);
 		this.err(errIn);
-
-		this.tagParser(new TagParser());
-	}
-
-	public StreamLogger(PrintStream outIn, PrintStream errIn, String patternIn)
-	{
-		this.out(outIn);
-		this.err(errIn);
-
-		this.tagParser().withPattern(patternIn);
 	}
 
 	@Override
-	protected ILogger printErr(String contentIn)
+	public ILogger log(EnumSeverity severityIn, Object... objectsIn)
 	{
-		this.err().print(contentIn);
+		this.print(severityIn, "[" + severityIn.alias() + "]" + LogUtils.toString(objectsIn));
 
 		return this;
 	}
 
 	@Override
-	protected ILogger print(String contentIn)
+	public ILogger logLn(EnumSeverity severityIn, Object... objectsIn)
 	{
-		this.out().print(contentIn);
+		this.printLn(severityIn, "[" + severityIn.alias() + "]" + LogUtils.toString(objectsIn));
 
 		return this;
+	}
+
+	@Override
+	public ILogger log(Object... objectsIn)
+	{
+		this.out().print(LogUtils.toString(objectsIn));
+
+		return this;
+	}
+
+	@Override
+	public ILogger logLn(Object... objectsIn)
+	{
+		this.out().println(LogUtils.toString(objectsIn));
+
+		return this;
+	}
+
+	@Override
+	public ILogger logErr(Object... objectsIn)
+	{
+		this.err().print(LogUtils.toString(objectsIn));
+
+		return this;
+	}
+
+	@Override
+	public ILogger logErrLn(Object... objectsIn)
+	{
+		this.err().println(LogUtils.toString(objectsIn));
+
+		return this;
+	}
+
+	public void print(EnumSeverity severityIn, String contentIn)
+	{
+		if (severityIn.errStream())
+		{
+			this.err().print(contentIn);
+		}
+		else
+		{
+			this.out().print(contentIn);
+		}
+	}
+
+	public void printLn(EnumSeverity severityIn, String contentIn)
+	{
+		if (severityIn.errStream())
+		{
+			this.err().print(contentIn);
+		}
+		else
+		{
+			this.out().print(contentIn);
+		}
 	}
 }
