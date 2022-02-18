@@ -31,9 +31,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import fr.onsiea.logger.utils.LogUtils;
+import fr.onsiea.logger.tag.TagParser;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -44,11 +44,10 @@ import lombok.ToString;
  */
 
 @AllArgsConstructor(staticName = "of")
-@EqualsAndHashCode
 @ToString
 @Getter
 @Setter
-public class FileLogger implements ILogger
+public class FileLogger extends BaseLogger implements ILogger
 {
 	private BufferedWriter	out;
 	private BufferedWriter	err;
@@ -58,91 +57,32 @@ public class FileLogger implements ILogger
 
 	private long			last;
 
-	public FileLogger(String outFilepathIn, String errFilepathIn) throws IOException
+	private FileLogger(String outFilepathIn, String errFilepathIn, long saveTimeIn, boolean appendIn, String patternIn)
+			throws IOException
 	{
 		this.outFilepath(outFilepathIn);
 		this.errFilepath(errFilepathIn);
-		this.out(new BufferedWriter(new FileWriter(new File(this.outFilepath()))));
-		this.err(new BufferedWriter(new FileWriter(new File(this.errFilepath()))));
-		this.saveTime(-1);
-	}
-
-	public FileLogger(String outFilepathIn, String errFilepathIn, long saveTimeIn) throws IOException
-	{
-		this.outFilepath(outFilepathIn);
-		this.errFilepath(errFilepathIn);
-		this.out(new BufferedWriter(new FileWriter(new File(this.outFilepath()))));
-		this.err(new BufferedWriter(new FileWriter(new File(this.errFilepath()))));
+		this.out(new BufferedWriter(new FileWriter(new File(this.outFilepath()), appendIn)));
+		this.err(new BufferedWriter(new FileWriter(new File(this.errFilepath()), appendIn)));
 		this.saveTime(saveTimeIn);
+
+		this.tagParser(new TagParser(patternIn));
 	}
 
 	@Override
-	public ILogger log(EnumSeverity severityIn, Object... objectsIn)
+	public ILogger withPattern(String patterIn)
 	{
-		this.write(severityIn, "[" + severityIn.alias() + "]" + LogUtils.toString(objectsIn));
-
-		return this;
-	}
-
-	@Override
-	public ILogger logLn(EnumSeverity severityIn, Object... objectsIn)
-	{
-		this.write(severityIn, "[" + severityIn.alias() + "]" + LogUtils.toString(objectsIn) + "\n");
+		this.tagParser().withPattern(patterIn);
 
 		return this;
 	}
 
 	@Override
-	public ILogger log(Object... objectsIn)
-	{
-		this.writeOut(LogUtils.toString(objectsIn));
-
-		return this;
-	}
-
-	@Override
-	public ILogger logLn(Object... objectsIn)
-	{
-		this.writeOut(LogUtils.toString(objectsIn) + "\n");
-
-		return this;
-	}
-
-	@Override
-	public ILogger logErr(Object... objectsIn)
-	{
-		this.writeErr(LogUtils.toString(objectsIn));
-
-		return this;
-	}
-
-	@Override
-	public ILogger logErrLn(Object... objectsIn)
-	{
-		this.writeErr(LogUtils.toString(objectsIn) + "\n");
-
-		return this;
-	}
-
-	public ILogger write(EnumSeverity severityIn, String contentIn)
-	{
-		if (severityIn.errStream())
-		{
-			this.writeErr(contentIn);
-		}
-		else
-		{
-			this.writeOut(contentIn);
-		}
-
-		return this;
-	}
-
-	public ILogger writeOut(String contentIn)
+	protected ILogger printErr(String contentIn)
 	{
 		try
 		{
-			this.out().write(contentIn);
+			this.err().write(contentIn);
 		}
 		catch (final IOException e)
 		{
@@ -163,11 +103,12 @@ public class FileLogger implements ILogger
 		return this;
 	}
 
-	public ILogger writeErr(String contentIn)
+	@Override
+	protected ILogger print(String contentIn)
 	{
 		try
 		{
-			this.err().write(contentIn);
+			this.out().write(contentIn);
 		}
 		catch (final IOException e)
 		{
@@ -203,13 +144,59 @@ public class FileLogger implements ILogger
 	{
 		this.err().close();
 		this.out().close();
-		this.out(new BufferedWriter(new FileWriter(new File(this.outFilepath()))));
-		this.err(new BufferedWriter(new FileWriter(new File(this.errFilepath()))));
+		this.out(new BufferedWriter(new FileWriter(new File(this.outFilepath()), true)));
+		this.err(new BufferedWriter(new FileWriter(new File(this.errFilepath()), true)));
 	}
 
 	public void close() throws IOException
 	{
 		this.err().close();
 		this.out().close();
+	}
+
+	@Setter(AccessLevel.PUBLIC)
+	@Getter(AccessLevel.PRIVATE)
+	public final static class Builder
+	{
+		private String	outFilepath;
+		private String	errFilepath;
+		private long	saveTime;
+		private String	pattern;
+		private boolean	append;
+
+		public Builder(String filepathIn)
+		{
+			this.outFilepath(filepathIn);
+			this.errFilepath(filepathIn);
+			this.pattern("<content>");
+			this.saveTime(-1);
+		}
+
+		public Builder(String outFilepathIn, String errFilepathIn)
+		{
+			this.outFilepath(outFilepathIn);
+			this.errFilepath(errFilepathIn);
+			this.pattern("<content>");
+			this.saveTime(-1);
+		}
+
+		public FileLogger build() throws Exception
+		{
+			if (this.outFilepath() == null)
+			{
+				throw new Exception("[FileLogger] Out filepath is null !");
+			}
+			if (this.errFilepath() == null)
+			{
+				throw new Exception("[FileLogger] Err filepath is null !");
+			}
+			if (this.pattern() == null)
+			{
+				throw new Exception("[FileLogger] Log pattern is null !");
+			}
+
+			return new FileLogger(this.outFilepath(), this.errFilepath(), this.saveTime(), this.append(),
+					this.pattern());
+		}
 	}
 }
