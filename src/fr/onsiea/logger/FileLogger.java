@@ -62,8 +62,30 @@ public class FileLogger extends BaseLogger implements ILogger
 	{
 		this.outFilepath(outFilepathIn);
 		this.errFilepath(errFilepathIn);
-		this.out(new BufferedWriter(new FileWriter(new File(this.outFilepath()), appendIn)));
-		this.err(new BufferedWriter(new FileWriter(new File(this.errFilepath()), appendIn)));
+
+		final var outFile = new File(this.outFilepath());
+		if (!outFile.getParentFile().exists())
+		{
+			outFile.getParentFile().mkdirs();
+		}
+		if (!outFile.exists())
+		{
+			outFile.createNewFile();
+		}
+
+		this.out(new BufferedWriter(new FileWriter(outFile, appendIn)));
+
+		final var errFile = new File(this.errFilepath());
+		if (!errFile.getParentFile().exists())
+		{
+			errFile.getParentFile().mkdirs();
+		}
+		if (!errFile.exists())
+		{
+			errFile.createNewFile();
+		}
+
+		this.err(new BufferedWriter(new FileWriter(errFile, appendIn)));
 		this.saveTime(saveTimeIn);
 
 		this.tagParser(new TagParser(patternIn));
