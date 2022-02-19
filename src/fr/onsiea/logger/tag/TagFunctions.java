@@ -73,7 +73,7 @@ public class TagFunctions
 		{
 			final var entry = iterator.next();
 
-			if (tagInfoIn.name().contentEquals(entry.getKey()))
+			if (tagInfoIn.name().toLowerCase().contentEquals(entry.getKey().toLowerCase()))
 			{
 				return entry.getValue().replace(severityIn, patternIn, contentIn, tagInfoIn, currentStackTraceIn);
 			}

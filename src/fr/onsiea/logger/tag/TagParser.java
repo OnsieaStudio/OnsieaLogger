@@ -99,7 +99,7 @@ public class TagParser
 				.add("thread",
 						(severityIn, patternIn, contentIn, tagInfoIn, currentStackTraceIn) -> Thread.currentThread()
 								.getName())
-				.add("classFullName",
+				.add("classFullname",
 						(severityIn, patternIn, contentIn, tagInfoIn, currentStackTraceIn) -> TagParser
 								.index(tagInfoIn.parameters(), currentStackTraceIn).getClassName())
 				.add("className", (severityIn, patternIn, contentIn, tagInfoIn, currentStackTraceIn) ->
