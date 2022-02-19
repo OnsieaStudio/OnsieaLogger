@@ -49,6 +49,131 @@ import lombok.ToString;
 @Setter(AccessLevel.PRIVATE)
 public class TagParser
 {
+	private final static TagFunctions tagFunctions = new TagFunctions();
+
+	static
+	{
+		TagParser.tagFunctions.add("severity", (severityIn, patternIn, contentIn, tagInfoIn, currentStackTraceIn) ->
+		{
+			if (EnumSeverity.NONE.equals(severityIn))
+			{
+				return "";
+			}
+			return severityIn.name();
+		}).add("severity_alias", (severityIn, patternIn, contentIn, tagInfoIn, currentStackTraceIn) ->
+		{
+			if (EnumSeverity.NONE.equals(severityIn))
+			{
+				return "";
+			}
+			return severityIn.alias();
+		}).add("content", (severityIn, patternIn, contentIn, tagInfoIn, currentStackTraceIn) -> contentIn)
+				.add("pattern", (severityIn, patternIn, contentIn, tagInfoIn, currentStackTraceIn) -> patternIn)
+				.add("time", (severityIn, patternIn, contentIn, tagInfoIn, currentStackTraceIn) ->
+				{
+					if (tagInfoIn.parameters().size() > 0)
+					{
+						final var parameter = tagInfoIn.parameters().get(0);
+
+						if (parameter != null)
+						{
+							return TimeUtils.str(parameter);
+						}
+					}
+
+					return TimeUtils.str();
+				}).add("date", (severityIn, patternIn, contentIn, tagInfoIn, currentStackTraceIn) ->
+				{
+					if (tagInfoIn.parameters().size() > 0)
+					{
+						final var parameter = tagInfoIn.parameters().get(0);
+
+						if (parameter != null && parameter.matches("[GyMdkHmsSEDFwWahKzZYuXL\\._']"))
+						{
+							return DateUtils.str(parameter);
+						}
+					}
+
+					return DateUtils.str();
+				})
+				.add("thread",
+						(severityIn, patternIn, contentIn, tagInfoIn, currentStackTraceIn) -> Thread.currentThread()
+								.getName())
+				.add("classFullName",
+						(severityIn, patternIn, contentIn, tagInfoIn, currentStackTraceIn) -> TagParser
+								.index(tagInfoIn.parameters(), currentStackTraceIn).getClassName())
+				.add("className", (severityIn, patternIn, contentIn, tagInfoIn, currentStackTraceIn) ->
+				{
+					final var className = TagParser.index(tagInfoIn.parameters(), currentStackTraceIn).getClassName();
+					return className.substring(className.lastIndexOf(".") + 1);
+				})
+				.add("methodName",
+						(severityIn, patternIn, contentIn, tagInfoIn, currentStackTraceIn) -> TagParser
+								.index(tagInfoIn.parameters(), currentStackTraceIn).getMethodName())
+				.add("fileName",
+						(severityIn, patternIn, contentIn, tagInfoIn, currentStackTraceIn) -> TagParser
+								.index(tagInfoIn.parameters(), currentStackTraceIn).getFileName())
+				.add("moduleName",
+						(severityIn, patternIn, contentIn, tagInfoIn, currentStackTraceIn) -> TagParser
+								.index(tagInfoIn.parameters(), currentStackTraceIn).getModuleName())
+				.add("moduleVersion",
+						(severityIn, patternIn, contentIn, tagInfoIn, currentStackTraceIn) -> TagParser
+								.index(tagInfoIn.parameters(), currentStackTraceIn).getModuleVersion())
+				.add("classLoaderFullname",
+						(severityIn, patternIn, contentIn, tagInfoIn, currentStackTraceIn) -> TagParser
+								.index(tagInfoIn.parameters(), currentStackTraceIn).getClassLoaderName())
+				.add("classLoaderName", (severityIn, patternIn, contentIn, tagInfoIn, currentStackTraceIn) ->
+				{
+					final var classLoaderName = TagParser.index(tagInfoIn.parameters(), currentStackTraceIn)
+							.getClassLoaderName();
+					return classLoaderName.substring(classLoaderName.lastIndexOf(".") + 1);
+				})
+				.add("isNativeMethod",
+						(severityIn, patternIn, contentIn, tagInfoIn,
+								currentStackTraceIn) -> TagParser.index(tagInfoIn.parameters(), currentStackTraceIn)
+										.isNativeMethod() ? "nativeMethod" : "notNativeMethod")
+				.add("lineNumber", (severityIn, patternIn, contentIn, tagInfoIn, currentStackTraceIn) -> (""
+						+ TagParser.index(tagInfoIn.parameters(), currentStackTraceIn).getLineNumber()));
+	}
+
+	private final static StackTraceElement index(List<String> parametersIn, StackTraceElement currentStackTraceIn)
+	{
+		final var lastStackTrace = Thread.currentThread().getStackTrace()[Thread.currentThread().getStackTrace().length
+				- 4];
+
+		if (parametersIn.size() > 0)
+		{
+			final var value = parametersIn.get(0);
+
+			switch (value)
+			{
+				/**case "firstNotNative":
+					i = TagParser.firstNotNative() - 2;
+					if (i >= 0)
+					{
+						index = i;
+					}
+					break;**/
+
+				case "last":
+					return lastStackTrace;
+
+				case "current":
+					return currentStackTraceIn;
+
+				default:
+					final var i = Integer.parseInt(value);
+
+					if (i >= 0 && i < Thread.currentThread().getStackTrace().length)
+					{
+						return Thread.currentThread().getStackTrace()[i];
+					}
+			}
+		}
+
+		return currentStackTraceIn;
+	}
+
 	private final static boolean	ENCAPSULATION	= false;
 	private final static boolean	HIGH_SEVERITY	= true;
 	private final static boolean	LOG_WARN		= true;
@@ -66,7 +191,20 @@ public class TagParser
 	}
 
 	public final static TagParsingResult parseAndReplace(StringBuilder stringBuilderIn, EnumSeverity severityIn,
+			String contentIn, StackTraceElement lastTraceIn) throws Exception
+	{
+		return TagParser.parseAndReplace(stringBuilderIn, severityIn, contentIn, "", lastTraceIn);
+	}
+
+	public final static TagParsingResult parseAndReplace(StringBuilder stringBuilderIn, EnumSeverity severityIn,
 			String patternIn, String contentIn) throws Exception
+	{
+		return TagParser.parseAndReplace(stringBuilderIn, severityIn, patternIn, contentIn,
+				Thread.currentThread().getStackTrace()[1]);
+	}
+
+	public final static TagParsingResult parseAndReplace(StringBuilder stringBuilderIn, EnumSeverity severityIn,
+			String patternIn, String contentIn, StackTraceElement currentStackTraceIn) throws Exception
 	{
 		var			matcher	= TagParser.PATTERN_OPEN.matcher(patternIn);
 		final var	OPENS	= matcher.results().count();
@@ -206,7 +344,8 @@ public class TagParser
 							}
 						}
 
-						final var replacement = TagParser.replacement(severityIn, patternIn, contentIn, tagInfo);
+						final var replacement = TagParser.replacement(severityIn, patternIn, contentIn, tagInfo,
+								currentStackTraceIn);
 
 						if (replacement != null)
 						{
@@ -247,58 +386,9 @@ public class TagParser
 	}
 
 	private final static String replacement(EnumSeverity severityIn, String patternIn, String contentIn,
-			TagInfo tagInfoIn)
+			TagInfo tagInfoIn, StackTraceElement currentStackTraceIn)
 	{
-		switch (tagInfoIn.name())
-		{
-			case "severity":
-				if (EnumSeverity.NONE.equals(severityIn))
-				{
-					return null;
-				}
-				return severityIn.name();
-
-			case "severity_alias":
-				if (EnumSeverity.NONE.equals(severityIn))
-				{
-					return null;
-				}
-				return severityIn.alias();
-
-			case "content":
-				return contentIn;
-
-			case "pattern":
-				return patternIn;
-
-			case "time":
-				if (tagInfoIn.parameters().size() > 0)
-				{
-					final var parameter = tagInfoIn.parameters().get(0);
-
-					if (parameter != null)
-					{
-						return TimeUtils.str(parameter);
-					}
-				}
-
-				return TimeUtils.str();
-
-			case "date":
-				if (tagInfoIn.parameters().size() > 0)
-				{
-					final var parameter = tagInfoIn.parameters().get(0);
-
-					if (parameter != null && parameter.matches("[GyMdkHmsSEDFwWahKzZYuXL\\._']"))
-					{
-						return DateUtils.str(parameter);
-					}
-				}
-
-				return DateUtils.str();
-		}
-
-		return null;
+		return TagParser.tagFunctions.replace(severityIn, patternIn, contentIn, tagInfoIn, currentStackTraceIn);
 	}
 
 	private final static String err(String errorIn, String contentIn)
@@ -343,15 +433,18 @@ public class TagParser
 		return this;
 	}
 
-	public TagParsingResult parseAndReplace(EnumSeverity severityIn, String contentIn) throws Exception
+	public TagParsingResult parseAndReplace(EnumSeverity severityIn, String contentIn,
+			StackTraceElement currentStackTraceElementIn) throws Exception
 	{
-		return TagParser.parseAndReplace(this.stringBuilder(), severityIn, this.pattern(), contentIn);
+		return TagParser.parseAndReplace(this.stringBuilder(), severityIn, this.pattern(), contentIn,
+				currentStackTraceElementIn);
 	}
 
-	public TagParsingResult parseAndReplace(EnumSeverity severityIn, String patternIn, String contentIn)
-			throws Exception
+	public TagParsingResult parseAndReplace(EnumSeverity severityIn, String patternIn, String contentIn,
+			StackTraceElement currentStackTraceElementIn) throws Exception
 	{
-		return TagParser.parseAndReplace(this.stringBuilder(), severityIn, patternIn, contentIn);
+		return TagParser.parseAndReplace(this.stringBuilder(), severityIn, patternIn, contentIn,
+				currentStackTraceElementIn);
 	}
 
 	@EqualsAndHashCode

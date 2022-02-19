@@ -36,6 +36,8 @@ import fr.onsiea.logger.StreamLogger;
  */
 public class Main
 {
+	public final static String PATTERN = "<classFullName>/<methodName> [<lineNumber>] [<thread>-<severity>-<severity_alias>]-[<time:HH'h'mm ss's'S'ms'>]-[<date>] <content>";
+
 	public final static void main(String[] argsIn)
 	{
 		System.out.println("OnsieaLogger test start !");
@@ -52,9 +54,7 @@ public class Main
 		try
 		{
 			logger = new FileLogger.Builder("E:\\Java\\projets\\OnsieaLogger\\output\\out.log",
-					"E:\\Java\\projets\\OnsieaLogger\\output\\err.log").append(false)
-							.pattern("[<severity>-<severity_alias>]-[<time:HH'h'mm ss's'S'ms'>]-[<date>] <content>")
-							.build();
+					"E:\\Java\\projets\\OnsieaLogger\\output\\err.log").append(false).pattern(Main.PATTERN).build();
 		}
 		catch (final Exception e)
 		{
@@ -78,7 +78,7 @@ public class Main
 
 		try
 		{
-			logger = new ConsoleLogger("[<severity>-<severity_alias>]-[<time:HH'h'mm ss's'S'ms'>]-[<date>] <content>");
+			logger = new ConsoleLogger(Main.PATTERN);
 		}
 		catch (final Exception e)
 		{
@@ -102,8 +102,7 @@ public class Main
 
 		try
 		{
-			logger = new StreamLogger(System.out, System.err,
-					"[<severity>-<severity_alias>]-[<time:HH'h'mm ss's'S'ms'>]-[<date>] <content>");
+			logger = new StreamLogger(System.out, System.err, Main.PATTERN);
 		}
 		catch (final Exception e)
 		{
