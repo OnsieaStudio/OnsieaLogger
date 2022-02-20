@@ -78,7 +78,9 @@ public class Loggers
 	{
 		for (final ILogger logger : this.loggers().values())
 		{
+			logger.increaseStackTraceIncrement();
 			logger.log(severityIn, objectsIn);
+			logger.resetStackTraceIncrement();
 		}
 
 		return this;
@@ -88,7 +90,9 @@ public class Loggers
 	{
 		for (final ILogger logger : this.loggers().values())
 		{
+			logger.increaseStackTraceIncrement();
 			logger.logLn(severityIn, objectsIn);
+			logger.resetStackTraceIncrement();
 		}
 
 		return this;
@@ -98,7 +102,9 @@ public class Loggers
 	{
 		for (final ILogger logger : this.loggers().values())
 		{
+			logger.increaseStackTraceIncrement();
 			logger.log(objectsIn);
+			logger.resetStackTraceIncrement();
 		}
 
 		return this;
@@ -108,7 +114,9 @@ public class Loggers
 	{
 		for (final ILogger logger : this.loggers().values())
 		{
+			logger.increaseStackTraceIncrement();
 			logger.logLn(objectsIn);
+			logger.resetStackTraceIncrement();
 		}
 
 		return this;
@@ -118,7 +126,9 @@ public class Loggers
 	{
 		for (final ILogger logger : this.loggers().values())
 		{
+			logger.increaseStackTraceIncrement();
 			logger.logErr(objectsIn);
+			logger.resetStackTraceIncrement();
 		}
 
 		return this;
@@ -128,7 +138,9 @@ public class Loggers
 	{
 		for (final ILogger logger : this.loggers().values())
 		{
+			logger.increaseStackTraceIncrement();
 			logger.logErrLn(objectsIn);
+			logger.resetStackTraceIncrement();
 		}
 
 		return this;

@@ -32,6 +32,10 @@ package fr.onsiea.logger;
  */
 public interface ILogger
 {
+	ILogger increaseStackTraceIncrement();
+
+	ILogger resetStackTraceIncrement();
+
 	ILogger log(EnumSeverity severityIn, Object... objectsIn);
 
 	ILogger logLn(EnumSeverity severityIn, Object... objectsIn);

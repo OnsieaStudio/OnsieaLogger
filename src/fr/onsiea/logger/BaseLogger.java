@@ -40,7 +40,8 @@ import lombok.Setter;
 @Setter(AccessLevel.PROTECTED)
 public abstract class BaseLogger implements ILogger
 {
-	private TagParser tagParser;
+	private TagParser	tagParser;
+	private int			stackTraceIncrement	= 0;
 
 	protected BaseLogger()
 	{
@@ -50,6 +51,22 @@ public abstract class BaseLogger implements ILogger
 	protected BaseLogger(String patternIn)
 	{
 		this.tagParser(new TagParser(patternIn));
+	}
+
+	@Override
+	public ILogger increaseStackTraceIncrement()
+	{
+		this.stackTraceIncrement++;
+
+		return this;
+	}
+
+	@Override
+	public ILogger resetStackTraceIncrement()
+	{
+		this.stackTraceIncrement = 0;
+
+		return this;
 	}
 
 	@Override
@@ -65,8 +82,11 @@ public abstract class BaseLogger implements ILogger
 	{
 		try
 		{
-			this.print(severityIn, this.tagParser().parseAndReplace(severityIn, LogUtils.toString(objectsIn),
-					Thread.currentThread().getStackTrace()[2]).stringBuilder().toString());
+			this.print(severityIn,
+					this.tagParser()
+							.parseAndReplace(severityIn, LogUtils.toString(objectsIn),
+									Thread.currentThread().getStackTrace()[2 + this.stackTraceIncrement()])
+							.stringBuilder().toString());
 		}
 		catch (final Exception e)
 		{
@@ -84,7 +104,7 @@ public abstract class BaseLogger implements ILogger
 			this.printLn(severityIn,
 					this.tagParser()
 							.parseAndReplace(severityIn, LogUtils.toString(objectsIn),
-									Thread.currentThread().getStackTrace()[2])
+									Thread.currentThread().getStackTrace()[2 + this.stackTraceIncrement()])
 							.stringBuilder().toString() + System.lineSeparator());
 		}
 		catch (final Exception e)
@@ -100,8 +120,10 @@ public abstract class BaseLogger implements ILogger
 	{
 		try
 		{
-			this.print(this.tagParser().parseAndReplace(OnsieaLogger.defaultSeverity(), LogUtils.toString(objectsIn),
-					Thread.currentThread().getStackTrace()[2]).stringBuilder().toString());
+			this.print(this.tagParser()
+					.parseAndReplace(OnsieaLogger.defaultSeverity(), LogUtils.toString(objectsIn),
+							Thread.currentThread().getStackTrace()[2 + this.stackTraceIncrement()])
+					.stringBuilder().toString());
 		}
 		catch (final Exception e)
 		{
@@ -118,7 +140,7 @@ public abstract class BaseLogger implements ILogger
 		{
 			this.print(this.tagParser()
 					.parseAndReplace(OnsieaLogger.defaultSeverity(), LogUtils.toString(objectsIn),
-							Thread.currentThread().getStackTrace()[2])
+							Thread.currentThread().getStackTrace()[2 + this.stackTraceIncrement()])
 					.stringBuilder().toString() + System.lineSeparator());
 		}
 		catch (final Exception e)
@@ -134,9 +156,10 @@ public abstract class BaseLogger implements ILogger
 	{
 		try
 		{
-			this.printErr(
-					this.tagParser().parseAndReplace(OnsieaLogger.defaultErrorSeverity(), LogUtils.toString(objectsIn),
-							Thread.currentThread().getStackTrace()[2]).stringBuilder().toString());
+			this.printErr(this.tagParser()
+					.parseAndReplace(OnsieaLogger.defaultErrorSeverity(), LogUtils.toString(objectsIn),
+							Thread.currentThread().getStackTrace()[2 + this.stackTraceIncrement()])
+					.stringBuilder().toString());
 		}
 		catch (final Exception e)
 		{
@@ -153,7 +176,7 @@ public abstract class BaseLogger implements ILogger
 		{
 			this.printErr(this.tagParser()
 					.parseAndReplace(OnsieaLogger.defaultErrorSeverity(), LogUtils.toString(objectsIn),
-							Thread.currentThread().getStackTrace()[2])
+							Thread.currentThread().getStackTrace()[2 + this.stackTraceIncrement()])
 					.stringBuilder().toString() + System.lineSeparator());
 		}
 		catch (final Exception e)
