@@ -52,6 +52,7 @@ public abstract class BaseLogger implements ILogger
 		this.tagParser(new TagParser(patternIn));
 	}
 
+	@Override
 	public ILogger withPattern(String patternIn)
 	{
 		this.tagParser().withPattern(patternIn);
@@ -99,7 +100,7 @@ public abstract class BaseLogger implements ILogger
 	{
 		try
 		{
-			this.print(this.tagParser().parseAndReplace(EnumSeverity.NONE, LogUtils.toString(objectsIn),
+			this.print(this.tagParser().parseAndReplace(OnsieaLogger.defaultSeverity(), LogUtils.toString(objectsIn),
 					Thread.currentThread().getStackTrace()[2]).stringBuilder().toString());
 		}
 		catch (final Exception e)
@@ -116,7 +117,7 @@ public abstract class BaseLogger implements ILogger
 		try
 		{
 			this.print(this.tagParser()
-					.parseAndReplace(EnumSeverity.NONE, LogUtils.toString(objectsIn),
+					.parseAndReplace(OnsieaLogger.defaultSeverity(), LogUtils.toString(objectsIn),
 							Thread.currentThread().getStackTrace()[2])
 					.stringBuilder().toString() + System.lineSeparator());
 		}
@@ -133,8 +134,9 @@ public abstract class BaseLogger implements ILogger
 	{
 		try
 		{
-			this.printErr(this.tagParser().parseAndReplace(EnumSeverity.NONE, LogUtils.toString(objectsIn),
-					Thread.currentThread().getStackTrace()[2]).stringBuilder().toString());
+			this.printErr(
+					this.tagParser().parseAndReplace(OnsieaLogger.defaultErrorSeverity(), LogUtils.toString(objectsIn),
+							Thread.currentThread().getStackTrace()[2]).stringBuilder().toString());
 		}
 		catch (final Exception e)
 		{
@@ -150,7 +152,7 @@ public abstract class BaseLogger implements ILogger
 		try
 		{
 			this.printErr(this.tagParser()
-					.parseAndReplace(EnumSeverity.NONE, LogUtils.toString(objectsIn),
+					.parseAndReplace(OnsieaLogger.defaultErrorSeverity(), LogUtils.toString(objectsIn),
 							Thread.currentThread().getStackTrace()[2])
 					.stringBuilder().toString() + System.lineSeparator());
 		}

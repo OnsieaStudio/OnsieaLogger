@@ -34,8 +34,31 @@ public class OnsieaLogger
 {
 	// Version info
 
-	public final static int		VERSION_MAJOR	= 1;
-	public final static int		VERSION_MINOR	= 1;
-	public final static String	VERSION			= OnsieaLogger.VERSION_MAJOR + "." + OnsieaLogger.VERSION_MINOR;
-	public final static String	VERSION_DATE	= "02/19/2022 19h44";
+	public final static int		VERSION_MAJOR			= 2;
+	public final static int		VERSION_MINOR			= 0;
+	public final static String	VERSION					= OnsieaLogger.VERSION_MAJOR + "." + OnsieaLogger.VERSION_MINOR;
+	public final static String	VERSION_DATE			= "20/20/2022 18h49";
+
+	private static EnumSeverity	defaultSeverity			= EnumSeverity.INFORMATION;
+	private static EnumSeverity	defaultErrorSeverity	= EnumSeverity.ERROR;
+
+	public static final EnumSeverity defaultSeverity()
+	{
+		return OnsieaLogger.defaultSeverity;
+	}
+
+	public static final void defaultSeverity(EnumSeverity defaultSeverityIn)
+	{
+		OnsieaLogger.defaultSeverity = defaultSeverityIn;
+	}
+
+	public static final EnumSeverity defaultErrorSeverity()
+	{
+		return OnsieaLogger.defaultErrorSeverity;
+	}
+
+	public static final void defaultErrorSeverity(EnumSeverity defaultErrorSeverityIn)
+	{
+		OnsieaLogger.defaultErrorSeverity = defaultErrorSeverityIn;
+	}
 }
