@@ -43,4 +43,9 @@ public interface ILogger
 	ILogger logErr(Object... objectsIn);
 
 	ILogger logErrLn(Object... objectsIn);
+
+	/**
+	 * @param patternIn
+	 */
+	ILogger withPattern(String patternIn);
 }

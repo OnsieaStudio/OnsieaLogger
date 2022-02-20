@@ -28,6 +28,7 @@ package fr.onsiea.logger.test;
 
 import fr.onsiea.logger.ConsoleLogger;
 import fr.onsiea.logger.FileLogger;
+import fr.onsiea.logger.Loggers;
 import fr.onsiea.logger.StreamLogger;
 
 /**
@@ -44,6 +45,7 @@ public class Main
 		Main.fileLogger();
 		Main.consoleLogger();
 		Main.streamLogger();
+		Main.consoleAndFileLogger();
 		System.out.println("OnsieaLogger test end !");
 	}
 
@@ -113,6 +115,31 @@ public class Main
 		{
 			logger.logErrLn("stream - A");
 			logger.logLn("stream - B");
+		}
+		catch (final Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public final static void consoleAndFileLogger()
+	{
+		Loggers loggers = null;
+
+		try
+		{
+			loggers = Loggers.consoleAndFile(Main.PATTERN, "E:\\Java\\projets\\OnsieaLogger\\output\\out.log",
+					"E:\\Java\\projets\\OnsieaLogger\\output\\err.log");
+		}
+		catch (final Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		try
+		{
+			loggers.logErrLn("consoleAndFile - A");
+			loggers.logLn("consoleAndFile - B");
 		}
 		catch (final Exception e)
 		{

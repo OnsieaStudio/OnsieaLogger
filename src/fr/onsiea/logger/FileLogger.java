@@ -82,6 +82,7 @@ public class FileLogger extends BaseLogger implements ILogger
 		}
 		if (!errFile.exists())
 		{
+			System.out.println("A : " + errFile.getAbsolutePath());
 			errFile.createNewFile();
 		}
 
