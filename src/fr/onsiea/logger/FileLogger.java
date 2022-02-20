@@ -49,13 +49,17 @@ import lombok.ToString;
 @Setter
 public class FileLogger extends BaseLogger implements ILogger
 {
-	private BufferedWriter	out;
-	private BufferedWriter	err;
-	private String			outFilepath;
-	private String			errFilepath;
-	private long			saveTime;
+	private File	outFile;
+	private File	errFile;
 
-	private long			last;
+	private String	outFilepath;
+	private String	errFilepath;
+	private String	outContent;
+	private String	errContent;
+
+	private long	saveTime;
+
+	private long	last;
 
 	private FileLogger(String outFilepathIn, String errFilepathIn, long saveTimeIn, boolean appendIn, String patternIn)
 			throws IOException
@@ -72,8 +76,7 @@ public class FileLogger extends BaseLogger implements ILogger
 		{
 			outFile.createNewFile();
 		}
-
-		this.out(new BufferedWriter(new FileWriter(outFile, appendIn)));
+		this.outFile(outFile);
 
 		final var errFile = new File(this.errFilepath());
 		if (!errFile.getParentFile().exists())
@@ -82,14 +85,16 @@ public class FileLogger extends BaseLogger implements ILogger
 		}
 		if (!errFile.exists())
 		{
-			System.out.println("A : " + errFile.getAbsolutePath());
 			errFile.createNewFile();
 		}
+		this.errFile(errFile);
 
-		this.err(new BufferedWriter(new FileWriter(errFile, appendIn)));
 		this.saveTime(saveTimeIn);
 
 		this.tagParser(new TagParser(patternIn));
+
+		this.outContent("");
+		this.errContent("");
 	}
 
 	@Override
@@ -103,24 +108,14 @@ public class FileLogger extends BaseLogger implements ILogger
 	@Override
 	protected ILogger printErr(String contentIn)
 	{
+		this.errContent += contentIn;
 		try
 		{
-			this.err().write(contentIn);
+			this.saveRuntime();
 		}
 		catch (final IOException e)
 		{
 			e.printStackTrace();
-		}
-		finally
-		{
-			try
-			{
-				this.saveRuntime();
-			}
-			catch (final IOException e)
-			{
-				e.printStackTrace();
-			}
 		}
 
 		return this;
@@ -129,24 +124,14 @@ public class FileLogger extends BaseLogger implements ILogger
 	@Override
 	protected ILogger print(String contentIn)
 	{
+		this.outContent += contentIn;
 		try
 		{
-			this.out().write(contentIn);
+			this.saveRuntime();
 		}
 		catch (final IOException e)
 		{
 			e.printStackTrace();
-		}
-		finally
-		{
-			try
-			{
-				this.saveRuntime();
-			}
-			catch (final IOException e)
-			{
-				e.printStackTrace();
-			}
 		}
 
 		return this;
@@ -165,16 +150,21 @@ public class FileLogger extends BaseLogger implements ILogger
 
 	public void save() throws IOException
 	{
-		this.err().close();
-		this.out().close();
-		this.out(new BufferedWriter(new FileWriter(new File(this.outFilepath()), true)));
-		this.err(new BufferedWriter(new FileWriter(new File(this.errFilepath()), true)));
-	}
-
-	public void close() throws IOException
-	{
-		this.err().close();
-		this.out().close();
+		try (var bufferedWriter = new BufferedWriter(new FileWriter(this.errFile(), true)))
+		{
+			bufferedWriter.write(this.errContent());
+			bufferedWriter.close();
+			this.errContent("");
+		}
+		try (var bufferedWriter = new BufferedWriter(new FileWriter(this.outFile(), true)))
+		{
+			bufferedWriter.write(this.outContent());
+			this.outContent("");
+		}
+		catch (final IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	@Setter(AccessLevel.PUBLIC)
