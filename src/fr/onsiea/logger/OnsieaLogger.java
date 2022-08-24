@@ -35,9 +35,9 @@ public class OnsieaLogger
 	// Version info
 
 	public final static int		VERSION_MAJOR			= 2;
-	public final static int		VERSION_MINOR			= 0;
+	public final static int		VERSION_MINOR			= 1;
 	public final static String	VERSION					= OnsieaLogger.VERSION_MAJOR + "." + OnsieaLogger.VERSION_MINOR;
-	public final static String	VERSION_DATE			= "20/20/2022 18h49";
+	public final static String	VERSION_DATE			= "02/20/2022 18h49";
 
 	private static EnumSeverity	defaultSeverity			= EnumSeverity.INFORMATION;
 	private static EnumSeverity	defaultErrorSeverity	= EnumSeverity.ERROR;
