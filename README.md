@@ -1,2 +1,3 @@
 # OnsieaLogger
-Simple information logging system, used in particular for Onesie studio projects
+
+OnsieaLogger is a simple, libre and opensource information logging system developped by Onsiea Studio and contributors in Java language, used in particular for Onsiea studio projects.
