@@ -3,53 +3,50 @@
  */
 package fr.onsiea.logger;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author Seynax
- *
  */
-@Setter(AccessLevel.PRIVATE)
-@Getter(AccessLevel.PUBLIC)
 public class Loggers
 {
-	public final static Loggers consoleAndFile(String outFilepathIn, String errFilepathIn) throws Exception
-	{
-		return new Loggers().put("console", new ConsoleLogger()).put("file",
-				new FileLogger.Builder(outFilepathIn, errFilepathIn).build());
-	}
-
-	public final static Loggers consoleAndFile(String outFilepathIn, String errFilepathIn, boolean appendInFileIn)
-			throws Exception
-	{
-		return new Loggers().put("console", new ConsoleLogger()).put("file",
-				new FileLogger.Builder(outFilepathIn, errFilepathIn).append(appendInFileIn).build());
-	}
-
-	public final static Loggers consoleAndFile(String patternIn, String outFilepathIn, String errFilepathIn)
-			throws Exception
-	{
-		return new Loggers().put("console", new ConsoleLogger(patternIn)).put("file",
-				new FileLogger.Builder(outFilepathIn, errFilepathIn).pattern(patternIn).build());
-	}
-
-	public final static Loggers consoleAndFile(String patternIn, String outFilepathIn, String errFilepathIn,
-			boolean appendInFileIn) throws Exception
-	{
-		return new Loggers().put("console", new ConsoleLogger(patternIn)).put("file",
-				new FileLogger.Builder(outFilepathIn, errFilepathIn).pattern(patternIn).append(appendInFileIn).build());
-	}
-
-	private Map<String, ILogger> loggers;
+	private @Getter(AccessLevel.PUBLIC)
+	@Setter(AccessLevel.PRIVATE) Map<String, ILogger> loggers;
 
 	public Loggers()
 	{
 		this.loggers(new HashMap<>());
+	}
+
+	public static Loggers consoleAndFile(String outFilepathIn, String errFilepathIn) throws Exception
+	{
+		return new Loggers().put("console", new ConsoleLogger())
+				.put("file", new FileLogger.Builder(outFilepathIn, errFilepathIn).build());
+	}
+
+	public static Loggers consoleAndFile(String outFilepathIn, String errFilepathIn, boolean appendInFileIn)
+			throws Exception
+	{
+		return new Loggers().put("console", new ConsoleLogger())
+				.put("file", new FileLogger.Builder(outFilepathIn, errFilepathIn).append(appendInFileIn).build());
+	}
+
+	public static Loggers consoleAndFile(String patternIn, String outFilepathIn, String errFilepathIn) throws Exception
+	{
+		return new Loggers().put("console", new ConsoleLogger(patternIn))
+				.put("file", new FileLogger.Builder(outFilepathIn, errFilepathIn).pattern(patternIn).build());
+	}
+
+	public static Loggers consoleAndFile(String patternIn, String outFilepathIn, String errFilepathIn,
+			boolean appendInFileIn) throws Exception
+	{
+		return new Loggers().put("console", new ConsoleLogger(patternIn)).put("file",
+				new FileLogger.Builder(outFilepathIn, errFilepathIn).pattern(patternIn).append(appendInFileIn).build());
 	}
 
 	public Loggers put(String nameIn, ILogger loggerIn)

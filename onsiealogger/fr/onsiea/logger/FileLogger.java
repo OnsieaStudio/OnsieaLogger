@@ -1,46 +1,44 @@
 /**
-*	Copyright 2021 Onsiea All rights reserved.
-*
-*	This file is part of OnsieaLogger. (https://github.com/Onsiea/OnsieaLogger)
-*
-*	Unless noted in license (https://github.com/Onsiea/OnsieaLogger/blob/main/LICENSE.md) notice file (https://github.com/Onsiea/OnsieaLogger/blob/main/LICENSE_NOTICE.md), OnsieaLogger and all parts herein is licensed under the terms of the LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)  found here https://www.gnu.org/licenses/lgpl-3.0.html and copied below the license file.
-*
-*	OnsieaLogger is libre software: you can redistribute it and/or modify
-*	it under the terms of the GNU Lesser General Public License as published by
-*	the Free Software Foundation, either version 3.0 of the License, or
-*	(at your option) any later version.
-*
-*	OnsieaLogger is distributed in the hope that it will be useful,
-*	but WITHOUT ANY WARRANTY; without even the implied warranty of
-*	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*	GNU Lesser General Public License for more details.
-*
-*	You should have received a copy of the GNU Lesser General Public License
-*	along with OnsieaLogger.  If not, see <https://www.gnu.org/licenses/> <https://www.gnu.org/licenses/lgpl-3.0.html>.
-*
-*	Neither the name "Onsiea", "OnsieaLogger", or any derivative name or the names of its authors / contributors may be used to endorse or promote products derived from this software and even less to name another project or other work without clear and precise permissions written in advance.
-*
-*	(more details on https://github.com/Onsiea/OnsieaLogger/wiki/License)
-*
-*	@author Seynax
-*/
+ * Copyright 2021 Onsiea All rights reserved.
+ * <p>
+ * This file is part of OnsieaLogger. (https://github.com/Onsiea/OnsieaLogger)
+ * <p>
+ * Unless noted in license (https://github.com/Onsiea/OnsieaLogger/blob/main/LICENSE.md) notice file
+ * (https://github.com/Onsiea/OnsieaLogger/blob/main/LICENSE_NOTICE.md), OnsieaLogger and all parts herein is licensed
+ * under the terms of the LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)  found here
+ * https://www.gnu.org/licenses/lgpl-3.0.html and copied below the license file.
+ * <p>
+ * OnsieaLogger is libre software: you can redistribute it and/or modify it under the terms of the GNU Lesser General
+ * Public License as published by the Free Software Foundation, either version 3.0 of the License, or (at your option)
+ * any later version.
+ * <p>
+ * OnsieaLogger is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
+ * details.
+ * <p>
+ * You should have received a copy of the GNU Lesser General Public License along with OnsieaLogger.  If not, see
+ * <https://www.gnu.org/licenses/> <https://www.gnu.org/licenses/lgpl-3.0.html>.
+ * <p>
+ * Neither the name "Onsiea", "OnsieaLogger", or any derivative name or the names of its authors / contributors may be
+ * used to endorse or promote products derived from this software and even less to name another project or other work
+ * without clear and precise permissions written in advance.
+ * <p>
+ * (more details on https://github.com/Onsiea/OnsieaLogger/wiki/License)
+ *
+ * @author Seynax
+ */
 package fr.onsiea.logger;
+
+import fr.onsiea.logger.tag.TagParser;
+import lombok.*;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import fr.onsiea.logger.tag.TagParser;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
 /**
  * @author Seynax
- *
  */
 
 @AllArgsConstructor(staticName = "of")
@@ -49,17 +47,17 @@ import lombok.ToString;
 @Setter
 public class FileLogger extends BaseLogger implements ILogger
 {
-	private File	outFile;
-	private File	errFile;
+	private File outFile;
+	private File errFile;
 
-	private String	outFilepath;
-	private String	errFilepath;
-	private String	outContent;
-	private String	errContent;
+	private String outFilepath;
+	private String errFilepath;
+	private String outContent;
+	private String errContent;
 
-	private long	saveTime;
+	private long saveTime;
 
-	private long	last;
+	private long last;
 
 	private FileLogger(String outFilepathIn, String errFilepathIn, long saveTimeIn, boolean appendIn, String patternIn)
 			throws IOException
@@ -70,22 +68,35 @@ public class FileLogger extends BaseLogger implements ILogger
 		final var outFile = new File(this.outFilepath());
 		if (!outFile.getParentFile().exists())
 		{
-			outFile.getParentFile().mkdirs();
+			if (!outFile.getParentFile().mkdirs())
+			{
+				return;
+			}
 		}
 		if (!outFile.exists())
 		{
-			outFile.createNewFile();
+			if (!outFile.createNewFile())
+
+			{
+				return;
+			}
 		}
 		this.outFile(outFile);
 
 		final var errFile = new File(this.errFilepath());
 		if (!errFile.getParentFile().exists())
 		{
-			errFile.getParentFile().mkdirs();
+			if (!errFile.getParentFile().mkdirs())
+			{
+				return;
+			}
 		}
 		if (!errFile.exists())
 		{
-			errFile.createNewFile();
+			if (!errFile.createNewFile())
+			{
+				return;
+			}
 		}
 		this.errFile(errFile);
 
@@ -95,14 +106,6 @@ public class FileLogger extends BaseLogger implements ILogger
 
 		this.outContent("");
 		this.errContent("");
-	}
-
-	@Override
-	public ILogger withPattern(String patterIn)
-	{
-		this.tagParser().withPattern(patterIn);
-
-		return this;
 	}
 
 	@Override
@@ -171,11 +174,11 @@ public class FileLogger extends BaseLogger implements ILogger
 	@Getter(AccessLevel.PRIVATE)
 	public final static class Builder
 	{
-		private String	outFilepath;
-		private String	errFilepath;
-		private long	saveTime;
-		private String	pattern;
-		private boolean	append;
+		private String outFilepath;
+		private String errFilepath;
+		private long saveTime;
+		private String pattern;
+		private boolean append;
 
 		public Builder(String filepathIn)
 		{
