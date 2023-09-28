@@ -68,12 +68,16 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
 	<repositories>
 		<repository>
-			<id>OnsieaUtils</id>
+			<id>utils</id>
 			<url>https://raw.githubusercontent.com/OnsieaStudio/OnsieaUtils/maven/mvn-artifact</url>
 			<snapshots>
 				<enabled>true</enabled>
 				<updatePolicy>always</updatePolicy>
 			</snapshots>
+			<releases>
+				<enabled>false</enabled>
+				<updatePolicy>always</updatePolicy>
+			</releases>
 		</repository>
 	</repositories>
 
