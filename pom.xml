@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>fr.onsiea.tools</groupId>
+	<artifactId>logger</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<name>OnsieaLogger</name>
+	<url>https://github.com/OnsieaStudio/OnsieaLogger</url>
+	<description>Logging system used in particular for Onsiea studio projects</description>
+	<inceptionYear>2023</inceptionYear>
+
+	<licenses>
+		<license>
+			<name>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</name>
+			<url>https://opensource.org/license/gpl-3-0/</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<organization>
+		<name>OnsieaStudio</name>
+		<url>https://github.com/OnsieaStudio/</url>
+	</organization>
+
+	<developers>
+		<developer>
+			<name>Seynax</name>
+			<id>seynax</id>
+			<email>seynax@onsiea.com</email>
+			<timezone>+2</timezone>
+			<organization>OnsieaStudio</organization>
+			<organizationUrl>https://github.com/OnsieaStudio/</organizationUrl>
+			<roles>
+				<role>IT project manager</role>
+				<role>developer</role>
+			</roles>
+		</developer>
+	</developers>
+
+	<issueManagement>
+		<url>https://github.com/OnsieaStudio/OnsieaLogger/issues</url>
+		<system>GitHub</system>
+	</issueManagement>
+
+	<scm>
+		<url>https://github.com/OnsieaStudio/OnsieaLogger</url>
+		<connection>scm:git:git://github.com/OnsieaStudio/OnsieaLogger.git</connection>
+		<developerConnection>scm:git:git@github.com:OnsieaStudio/OnsieaLogger.git</developerConnection>
+	</scm>
+
+	<properties>
+		<maven.compiler.source>20</maven.compiler.source>
+		<maven.compiler.target>20</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<internal.repo.folder>mvn-artifact</internal.repo.folder>
+		<maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
+		<maven.deploy.plugin.version>3.1.1</maven.deploy.plugin.version>
+		<maven.source.plugin.version>3.3.0</maven.source.plugin.version>
+		<com.github.site.maven.plugin.version>0.12</com.github.site.maven.plugin.version>
+		<repository.name>OnsieaLogger</repository.name>
+		<repository.owner>OnsieaStudio</repository.owner>
+		<repository.branch.name>maven</repository.branch.name>
+		<github.global.server>github</github.global.server>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>OnsieaUtils</id>
+			<url>https://raw.githubusercontent.com/OnsieaStudio/OnsieaUtils/maven/mvn-artifact</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.30</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>fr.onsiea.tools</groupId>
+			<artifactId>utils</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+
+	<distributionManagement>
+		<repository>
+			<id>internal.repo</id>
+			<name>Temporary Staging Repository</name>
+			<url>file://${project.build.directory}/${internal.repo.folder}</url>
+		</repository>
+	</distributionManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven.compiler.plugin.version}</version>
+				<configuration>
+					<source>${maven.compiler.source}</source>
+					<target>${maven.compiler.target}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>${maven.deploy.plugin.version}</version>
+				<configuration>
+					<altDeploymentRepository>internal.repo::file://${project.build.directory}/${internal.repo.folder}</altDeploymentRepository>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>${maven.source.plugin.version}</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.github.github</groupId>
+				<artifactId>site-maven-plugin</artifactId>
+				<version>${com.github.site.maven.plugin.version}</version>
+				<configuration>
+					<message>Maven artifacts for ${project.version}</message>
+					<noJekyll>true</noJekyll>
+					<!-- disable webpage processing -->
+					<outputDirectory>${project.build.directory}</outputDirectory>
+					<branch>refs/heads/${repository.branch.name}</branch>
+					<includes>
+						<include>**/*</include>
+					</includes>
+					<merge>true</merge>
+					<repositoryName>${repository.name}</repositoryName>
+					<repositoryOwner>${repository.owner}</repositoryOwner>
+					<server>github</server>
+				</configuration>
+				<executions>
+					<!-- run site-maven-plugin's 'site' target as part of the build's normal 'deploy' phase -->
+					<execution>
+						<goals>
+							<goal>site</goal>
+						</goals>
+						<phase>deploy</phase>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
