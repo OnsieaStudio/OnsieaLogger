@@ -3,27 +3,27 @@
   <groupId>fr.onsiea.tools</groupId>
   <artifactId>logger</artifactId>
   <versioning>
-    <lastUpdated>20230928155222</lastUpdated>
+    <lastUpdated>20230928162241</lastUpdated>
     <snapshot>
-      <timestamp>20230928.155222</timestamp>
-      <buildNumber>1</buildNumber>
+      <timestamp>20230928.162241</timestamp>
+      <buildNumber>2</buildNumber>
     </snapshot>
     <snapshotVersions>
       <snapshotVersion>
         <extension>pom</extension>
-        <value>1.0-20230928.155222-1</value>
-        <updated>20230928155222</updated>
+        <value>1.0-20230928.162241-2</value>
+        <updated>20230928162241</updated>
       </snapshotVersion>
       <snapshotVersion>
         <extension>jar</extension>
-        <value>1.0-20230928.155222-1</value>
-        <updated>20230928155222</updated>
+        <value>1.0-20230928.162241-2</value>
+        <updated>20230928162241</updated>
       </snapshotVersion>
       <snapshotVersion>
         <classifier>sources</classifier>
         <extension>jar</extension>
-        <value>1.0-20230928.155222-1</value>
-        <updated>20230928155222</updated>
+        <value>1.0-20230928.162241-2</value>
+        <updated>20230928162241</updated>
       </snapshotVersion>
     </snapshotVersions>
   </versioning>
